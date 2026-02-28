@@ -1,7 +1,7 @@
 {
   "name": "moviesproject",
   "version": "1.0.0",
-  "main": "script.js",
+  "main": "server.js",
   "scripts": {
     "test": "jest",
     "start": "node server.js"
