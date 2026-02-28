@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Sign In</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="signin.css">
+</head>
+
+<body class="signin-body">
+    <div class="signin-hero-overlay">
+        <header>
+            <a href="index.html" class="logo">NETFLIX</a>
+        </header>
+
+        <div class="signin-container">
+            <h2>Sign In</h2>
+            <form class="signin-form" action="#">
+                <div class="signin-input-container">
+                    <input type="email" class="signin-input" id="signin-email" placeholder=" " required
+                        autocomplete="email">
+                    <label for="signin-email" class="signin-label">Email or phone number</label>
+                </div>
+                <div class="signin-input-container">
+                    <input type="password" class="signin-input" id="signin-password" placeholder=" " required
+                        autocomplete="current-password">
+                    <label for="signin-password" class="signin-label">Password</label>
+                </div>
+                <button type="submit" class="btn-signin-submit">Sign In</button>
+                <div class="signin-actions">
+                    <label class="remember-me"><input type="checkbox" checked> Remember me</label>
+                    <a href="#" class="need-help">Need help?</a>
+                </div>
+            </form>
+            <div class="signin-footer">
+                <p>New to Netflix? <a href="signup.html">Sign up now</a>.</p>
+                <p class="captcha-terms">This page is protected by Google reCAPTCHA to ensure you're not a bot. <a
+                        href="#">Learn more.</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.signin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
+            try {
+                const response = await fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('userEmail', email);
+                    if (data.userType) {
+                        localStorage.setItem('userType', data.userType);
+                    }
+                    window.location.href = 'welcome.html';
+                } else {
+                    alert('Sign in failed: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during sign in.');
+            }
+        });
+    </script>
+</body>
+
+</html>

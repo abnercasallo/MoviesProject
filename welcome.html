@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Welcome</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="welcome.css">
+</head>
+
+<body class="welcome-body">
+    <div class="welcome-container">
+        <!-- Text content -->
+        <h1 class="welcome-title">Hello, <span id="welcome-username">Abner</span>!</h1>
+        <p class="welcome-subtitle">You have successfully logged in. Get ready to enjoy the best content.</p>
+
+        <!-- Call to action button -->
+        <button id="btn-explore" class="btn-explore">Explore Content</button>
+
+        <!-- Account type display -->
+        <p class="welcome-account-type">Account Type: <span id="account-type-badge">PREMIUM</span></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // We can retrieve session data optionally from localStorage or cookies to map the name.
+            // For now, mapping it from an email prefix or a static name according to design mockup.
+
+            // Assuming the simple name extraction for display from email since there's no complex profile form yet:
+            const savedEmail = localStorage.getItem('userEmail');
+            if (savedEmail) {
+                const prefixName = savedEmail.split('@')[0];
+                const capitalizedName = prefixName.charAt(0).toUpperCase() + prefixName.slice(1);
+                document.getElementById('welcome-username').textContent = capitalizedName;
+            }
+
+            // Retrieve account type and map it
+            const savedUserType = localStorage.getItem('userType') || 'PREMIUM';
+            document.getElementById('account-type-badge').textContent = savedUserType;
+
+            const btnExplore = document.getElementById('btn-explore');
+            btnExplore.addEventListener('click', () => {
+                if (savedUserType && savedUserType.toUpperCase() === 'FREE') {
+                    alert('Only premium users can access the home page.');
+                } else {
+                    window.location.href = 'home.html';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="home-nav">
+        <div class="nav-left">
+            <a href="home.html" class="logo">NETFLIX</a>
+            <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">TV Shows</a></li>
+                <li><a href="#">Movies</a></li>
+                <li><a href="#">New & Popular</a></li>
+                <li><a href="#">My List</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <span class="nav-icon search-icon">⚲</span>
+            <span class="nav-icon bell-icon">🔔</span>
+            <div class="profile-menu">
+                <img src="https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-qo9h82134t9nv0j0.jpg"
+                    alt="Profile" class="profile-img">
+                <span class="caret"></span>
+            </div>
+            <!-- Add a quick sign out button for UX completeness -->
+            <a href="index.html" class="sign-out-btn">Sign Out</a>
+        </div>
+    </nav>
+
+    <!-- Hero Billboard -->
+    <div class="billboard">
+        <div class="billboard-overlay"></div>
+        <div class="billboard-content">
+            <h1 class="billboard-title">Stranger Things</h1>
+            <p class="billboard-synopsis">
+                When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying
+                supernatural forces and one strange little girl.
+            </p>
+            <div class="billboard-buttons">
+                <button class="btn-play">▶ Play</button>
+                <button class="btn-more-info">ⓘ More Info</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rows of Movies -->
+    <div class="slider-container">
+        <h2 class="slider-title">Trending Now</h2>
+        <div class="slider-row" id="row-trending-now">
+            <!-- Dynamic videos from Supabase will be injected here -->
+        </div>
+    </div>
+
+    <div class="slider-container">
+        <h2 class="slider-title">Top Picks for You</h2>
+        <div class="slider-row" id="row-top-picks-for-you">
+            <!-- Dynamic videos from Supabase will be injected here -->
+        </div>
+    </div>
+
+    <div class="slider-container">
+        <h2 class="slider-title">Action & Adventure</h2>
+        <div class="slider-row" id="row-action-adventure">
+            <!-- Dynamic videos from Supabase will be injected here -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="home-footer">
+        <div class="home-footer-links">
+            <a href="#">Audio and Subtitles</a>
+            <a href="#">Audio Description</a>
+            <a href="#">Help Center</a>
+            <a href="#">Gift Cards</a>
+            <a href="#">Media Center</a>
+            <a href="#">Investor Relations</a>
+            <a href="#">Jobs</a>
+            <a href="#">Terms of Use</a>
+            <a href="#">Privacy</a>
+            <a href="#">Legal Notices</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Corporate Information</a>
+            <a href="#">Contact Us</a>
+        </div>
+        <div class="service-code">
+            <button>Service Code</button>
+        </div>
+        <div class="copyright">
+            &copy; 1997-2026 Netflix, Inc.
+        </div>
+    </footer>
+
+    <script>
+        // Simple scrolling background effect for navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.home-nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Redirect to video player when a static movie or play button is clicked
+        const playElements = document.querySelectorAll('.btn-play');
+        playElements.forEach(element => {
+            element.addEventListener('click', () => {
+                window.location.href = 'player.html';
+            });
+        });
+
+        // Fetch videos from Supabase dynamically and map them to their categories
+        async function fetchSupabaseVideos() {
+            try {
+                const res = await fetch('/api/videos');
+                if (!res.ok) throw new Error('Network response was not ok');
+                const videos = await res.json();
+
+                if (videos && videos.length > 0) {
+                    const rowIds = {
+                        'Trending Now': 'row-trending-now',
+                        'Top Picks for You': 'row-top-picks-for-you',
+                        'Action & Adventure': 'row-action-adventure'
+                    };
+
+                    videos.forEach(video => {
+                        const targetRowId = rowIds[video.category];
+                        if (!targetRowId) return;
+
+                        const row = document.getElementById(targetRowId);
+                        if (!row) return;
+
+                        const img = document.createElement('img');
+                        img.className = 'row-img';
+                        img.src = video.thumbnail_url;
+                        img.alt = video.title;
+                        img.title = video.title;
+
+                        img.addEventListener('click', () => {
+                            window.location.href = `player.html?videoId=${video.id}`;
+                        });
+
+                        row.appendChild(img);
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to load videos from Supabase:', err);
+            }
+        }
+
+        fetchSupabaseVideos();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="signin.css">
+</head>
+
+<body class="signin-body">
+    <div class="signin-hero-overlay">
+        <header>
+            <a href="index.html" class="logo">NETFLIX</a>
+            <a href="signin.html" class="btn-signin">Sign In</a>
+        </header>
+
+        <div class="signin-container">
+            <h2>Sign Up</h2>
+            <form class="signin-form" action="#">
+                <div class="signin-input-container">
+                    <input type="email" class="signin-input" id="signup-email" placeholder=" " required
+                        autocomplete="email">
+                    <label for="signup-email" class="signin-label">Email address</label>
+                </div>
+                <div class="signin-input-container">
+                    <input type="password" class="signin-input" id="signup-password" placeholder=" " required
+                        autocomplete="new-password">
+                    <label for="signup-password" class="signin-label">Add a password</label>
+                </div>
+                <div class="signin-input-container">
+                    <input type="password" class="signin-input" id="signup-confirm-password" placeholder=" " required
+                        autocomplete="new-password">
+                    <label for="signup-confirm-password" class="signin-label">Confirm password</label>
+                </div>
+                <button type="submit" class="btn-signin-submit">Register</button>
+            </form>
+            <div class="signin-footer">
+                <p>Already have an account? <a href="signin.html">Sign In now</a>.</p>
+                <p class="captcha-terms">This page is protected by Google reCAPTCHA to ensure you're not a bot. <a
+                        href="#">Learn more.</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.signin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Registration successful! You can now sign in.');
+                    window.location.href = 'signin.html';
+                } else {
+                    alert('Registration failed: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during registration.');
+            }
+        });
+    </script>
+</body>
+
+</html>

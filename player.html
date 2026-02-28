@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Player</title>
+    <link rel="stylesheet" href="player.css">
+</head>
+
+<body>
+    <div class="player-container">
+        <!-- Back button overlay hovering on top left -->
+        <a href="home.html" class="back-btn" title="Back to Browse">
+            <!-- Left pointing arrow SVG -->
+            <svg viewBox="0 0 24 24" fill="white" width="36px" height="36px">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+            </svg>
+        </a>
+
+        <!-- Video Player -->
+        <video id="main-video" class="video-element" controls autoplay>
+            <!-- A generic open-source video for placeholder -->
+            <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script>
+        const video = document.getElementById('main-video');
+        const backBtn = document.querySelector('.back-btn');
+        let hideControlsTimeout;
+
+        // Hide the back button when the user is inactive to feel like a real player
+        const resetHideTimeout = () => {
+            backBtn.style.opacity = '1';
+            clearTimeout(hideControlsTimeout);
+
+            // Only hide the button if the video is actually playing
+            if (!video.paused) {
+                hideControlsTimeout = setTimeout(() => {
+                    backBtn.style.opacity = '0';
+                }, 3000); // 3 seconds of inactivity
+            }
+        };
+
+        // Attach mouse movement listeners to show/hide the button
+        document.addEventListener('mousemove', resetHideTimeout);
+        video.addEventListener('play', resetHideTimeout);
+        video.addEventListener('pause', () => {
+            clearTimeout(hideControlsTimeout);
+            backBtn.style.opacity = '1';
+        });
+
+        // Initialize display rules
+        resetHideTimeout();
+
+        // Fetch custom video if url has videoId
+        async function loadVideo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoId = urlParams.get('videoId');
+
+            if (videoId) {
+                try {
+                    const response = await fetch(`/api/videos/${videoId}`);
+                    if (!response.ok) throw new Error('Video not found');
+                    const videoData = await response.json();
+
+                    document.title = `Netflix - ${videoData.title}`;
+
+                    // Replace video source
+                    video.innerHTML = '';
+                    const source = document.createElement('source');
+                    source.src = videoData.video_url;
+                    source.type = 'video/mp4';
+                    video.appendChild(source);
+
+                    // Reload the video with the new source
+                    video.load();
+                    video.play();
+                } catch (error) {
+                    console.error('Error loading video:', error);
+                    alert('Could not load the requested video.');
+                }
+            }
+        }
+
+        loadVideo();
+    </script>
+</body>
+
+</html>
